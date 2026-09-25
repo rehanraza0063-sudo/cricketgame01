@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cricket Champions 26</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ============ MAIN MENU ============ -->
+<section id="screen-menu" class="screen active">
+  <div class="menu-bg">
+    <div class="floaters"></div>
+  </div>
+  <div class="menu-content">
+    <div class="logo">
+      <span class="logo-cricket">CRICKET</span>
+      <span class="logo-champions">CHAMPIONS<span class="logo-26">26</span></span>
+    </div>
+    <div class="menu-buttons">
+      <button class="btn btn-primary" data-nav="screen-format">Play Match</button>
+      <button class="btn" data-nav="screen-practice-setup">Practice</button>
+      <button class="btn" data-nav="screen-tournament">Tournament</button>
+      <button class="btn" data-nav="screen-career">Career</button>
+      <button class="btn" data-nav="screen-statistics">Statistics</button>
+      <button class="btn" data-nav="screen-settings">Settings</button>
+      <button class="btn btn-ghost" id="btn-exit">Exit</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FORMAT SELECT ============ -->
+<section id="screen-format" class="screen">
+  <h2 class="screen-title">Choose Match Format</h2>
+  <div class="format-cards">
+    <div class="format-card" data-format="quick">
+      <h3>Quick Match</h3><p>2 overs a side</p><span>Fast &amp; simple</span>
+    </div>
+    <div class="format-card" data-format="t20">
+      <h3>T20 Match</h3><p>20 overs a side</p><span>The classic format</span>
+    </div>
+    <div class="format-card" data-format="odi">
+      <h3>ODI Match</h3><p>50 overs a side</p><span>The full experience</span>
+    </div>
+  </div>
+  <button class="btn btn-ghost" data-nav="screen-menu">Back</button>
+</section>
+
+<!-- ============ TEAM SELECT ============ -->
+<section id="screen-teamselect" class="screen">
+  <h2 class="screen-title">Team Selection</h2>
+  <div class="teamselect-grid">
+    <div class="team-pick-col">
+      <h3>Your Team</h3>
+      <div id="teamgrid-a" class="team-grid"></div>
+    </div>
+    <div class="team-pick-col">
+      <h3>Opponent</h3>
+      <div id="teamgrid-b" class="team-grid"></div>
+    </div>
+  </div>
+  <div class="match-options">
+    <label>Stadium
+      <select id="select-stadium"></select>
+    </label>
+    <label>Difficulty
+      <select id="select-difficulty">
+        <option value="EASY">Easy</option>
+        <option value="MEDIUM" selected>Medium</option>
+        <option value="HARD">Hard</option>
+        <option value="PRO">Pro</option>
+      </select>
+    </label>
+  </div>
+  <div class="row-buttons">
+    <button class="btn btn-ghost" data-nav="screen-format">Back</button>
+    <button class="btn btn-primary" id="btn-goto-toss">Proceed to Toss</button>
+  </div>
+</section>
+
+<!-- ============ TOSS ============ -->
+<section id="screen-toss" class="screen">
+  <h2 class="screen-title">The Toss</h2>
+  <div class="coin-wrap">
+    <div id="coin" class="coin">H</div>
+  </div>
+  <div id="toss-call-row" class="row-buttons">
+    <button class="btn" data-call="Heads">Call Heads</button>
+    <button class="btn" data-call="Tails">Call Tails</button>
+  </div>
+  <p id="toss-result-text" class="toss-result"></p>
+  <div id="toss-decision-row" class="row-buttons hidden">
+    <button class="btn" data-decision="bat">Bat First</button>
+    <button class="btn" data-decision="bowl">Bowl First</button>
+  </div>
+  <button id="btn-start-match" class="btn btn-primary hidden">Start Match</button>
+</section>
+
+<!-- ============ MATCH SCREEN ============ -->
+<section id="screen-match" class="screen screen-match">
+  <canvas id="game-canvas"></canvas>
+
+  <div class="hud-top">
+    <div class="hud-score">
+      <div id="hud-team-name" class="hud-team-name">TEAM</div>
+      <div id="hud-score-line" class="hud-score-line">0/0</div>
+      <div id="hud-overs-line" class="hud-overs-line">0.0 / 0 OVERS</div>
+    </div>
+    <div id="hud-target" class="hud-target hidden"></div>
+  </div>
+
+  <div class="hud-players">
+    <div id="hud-batsman" class="hud-chip">A. SHAH 0 (0)</div>
+    <div id="hud-bowler" class="hud-chip">R. PATEL 0/0</div>
+  </div>
+
+  <div id="commentary-box" class="commentary-box"></div>
+
+  <div id="timing-meter" class="timing-meter hidden">
+    <div id="timing-result" class="timing-result"></div>
+  </div>
+
+  <!-- Batting controls -->
+  <div id="batting-controls" class="control-panel hidden">
+    <p class="hint">A / D aim &nbsp;•&nbsp; W loft &nbsp;•&nbsp; S defend &nbsp;•&nbsp; SPACE to swing</p>
+  </div>
+
+  <!-- Bowling controls -->
+  <div id="bowling-controls" class="control-panel hidden">
+    <div class="bowl-select-row">
+      <div class="bowl-group">
+        <span>Type</span>
+        <div class="chip-row" id="chip-type"></div>
+      </div>
+      <div class="bowl-group">
+        <span>Length</span>
+        <div class="chip-row" id="chip-length"></div>
+      </div>
+      <div class="bowl-group">
+        <span>Line</span>
+        <div class="chip-row" id="chip-line"></div>
+      </div>
+    </div>
+    <button id="btn-bowl-release" class="btn btn-primary">Bowl (SPACE)</button>
+  </div>
+
+  <button id="btn-pause" class="icon-btn">⏸</button>
+
+  <div id="pause-overlay" class="overlay hidden">
+    <div class="overlay-box">
+      <h3>Paused</h3>
+      <button class="btn" id="btn-resume">Resume</button>
+      <button class="btn btn-ghost" id="btn-quit-match">Quit to Menu</button>
+    </div>
+  </div>
+
+  <div id="innings-break" class="overlay hidden">
+    <div class="overlay-box">
+      <h3>Innings Break</h3>
+      <p id="innings-break-text"></p>
+      <button class="btn btn-primary" id="btn-start-innings2">Start 2nd Innings</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULT ============ -->
+<section id="screen-result" class="screen">
+  <h2 class="screen-title" id="result-headline">MATCH RESULT</h2>
+  <div id="result-body" class="result-body"></div>
+  <div class="row-buttons">
+    <button class="btn" data-nav="screen-menu">Main Menu</button>
+    <button class="btn btn-primary" id="btn-play-again">Play Again</button>
+  </div>
+</section>
+
+<!-- ============ PRACTICE SETUP ============ -->
+<section id="screen-practice-setup" class="screen">
+  <h2 class="screen-title">Practice Mode</h2>
+  <div class="format-cards">
+    <div class="format-card" data-practice="batting"><h3>Batting Practice</h3><p>Face unlimited deliveries</p></div>
+    <div class="format-card" data-practice="bowling"><h3>Bowling Practice</h3><p>Bowl at an AI batsman</p></div>
+  </div>
+  <button class="btn btn-ghost" data-nav="screen-menu">Back</button>
+</section>
+
+<section id="screen-practice" class="screen screen-match">
+  <canvas id="practice-canvas"></canvas>
+  <div class="hud-top"><div class="hud-score"><div class="hud-team-name">PRACTICE SESSION</div><div id="practice-stats" class="hud-score-line">0 runs • 0 balls</div></div></div>
+  <div id="practice-commentary" class="commentary-box"></div>
+  <div id="practice-timing-meter" class="timing-meter hidden"><div id="practice-timing-result" class="timing-result"></div></div>
+  <div id="practice-batting-controls" class="control-panel hidden">
+    <p class="hint">A / D aim • W loft • S defend • SPACE to swing</p>
+  </div>
+  <div id="practice-bowling-controls" class="control-panel hidden">
+    <div class="bowl-select-row">
+      <div class="bowl-group"><span>Type</span><div class="chip-row" id="p-chip-type"></div></div>
+      <div class="bowl-group"><span>Length</span><div class="chip-row" id="p-chip-length"></div></div>
+      <div class="bowl-group"><span>Line</span><div class="chip-row" id="p-chip-line"></div></div>
+    </div>
+    <button id="p-btn-bowl-release" class="btn btn-primary">Bowl (SPACE)</button>
+  </div>
+  <button class="btn btn-ghost end-practice-btn" id="btn-end-practice">End Practice</button>
+</section>
+
+<!-- ============ TOURNAMENT ============ -->
+<section id="screen-tournament" class="screen">
+  <h2 class="screen-title">Champions Cup</h2>
+  <div id="bracket" class="bracket"></div>
+  <div class="row-buttons">
+    <button class="btn btn-ghost" data-nav="screen-menu">Back</button>
+    <button class="btn btn-primary" id="btn-tourney-action">Start Tournament</button>
+  </div>
+</section>
+
+<!-- ============ CAREER ============ -->
+<section id="screen-career" class="screen">
+  <h2 class="screen-title">Career Mode</h2>
+  <div id="career-create" class="career-form">
+    <label>Player Name <input type="text" id="career-name" placeholder="Your name" /></label>
+    <label>Region
+      <select id="career-region">
+        <option>Mumbai</option><option>Delhi</option><option>Kolkata</option><option>Gujarat</option>
+        <option>Rajasthan</option><option>Chennai</option><option>Hyderabad</option><option>Bangalore</option>
+      </select>
+    </label>
+    <label>Batting Style
+      <select id="career-batstyle"><option>Right-hand Bat</option><option>Left-hand Bat</option></select>
+    </label>
+    <label>Bowling Style
+      <select id="career-bowlstyle"><option>Fast</option><option>Medium</option><option>Spin</option></select>
+    </label>
+    <button class="btn btn-primary" id="btn-create-career">Create Player</button>
+  </div>
+  <div id="career-dashboard" class="career-dashboard hidden">
+    <h3 id="career-player-name"></h3>
+    <p id="career-tier"></p>
+    <div id="career-stats" class="career-stats"></div>
+    <button class="btn btn-primary" id="btn-career-play">Play Next Career Match</button>
+    <button class="btn btn-ghost" id="btn-career-reset">Reset Career</button>
+  </div>
+  <button class="btn btn-ghost" data-nav="screen-menu">Back</button>
+</section>
+
+<!-- ============ STATISTICS ============ -->
+<section id="screen-statistics" class="screen">
+  <h2 class="screen-title">Statistics</h2>
+  <div id="stats-body" class="stats-body"></div>
+  <button class="btn btn-ghost" data-nav="screen-menu">Back</button>
+</section>
+
+<!-- ============ SETTINGS ============ -->
+<section id="screen-settings" class="screen">
+  <h2 class="screen-title">Settings</h2>
+  <div class="settings-list">
+    <label class="toggle-row"><span>Sound Effects</span><input type="checkbox" id="setting-sound" checked /></label>
+    <label class="toggle-row"><span>Graphics Quality</span>
+      <select id="setting-graphics"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+    </label>
+    <label class="toggle-row"><span>Default Difficulty</span>
+      <select id="setting-difficulty"><option value="EASY">Easy</option><option value="MEDIUM" selected>Medium</option><option value="HARD">Hard</option><option value="PRO">Pro</option></select>
+    </label>
+    <label class="toggle-row"><span>Preferred Camera</span>
+      <select id="setting-camera"><option value="bowler">Bowler End</option><option value="batter">Batter End</option><option value="wide">Wide Angle</option></select>
+    </label>
+    <button class="btn" id="btn-fullscreen">Toggle Fullscreen</button>
+  </div>
+  <button class="btn btn-ghost" data-nav="screen-menu">Back</button>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/commentary.js"></script>
+<script src="js/scene3d.js"></script>
+<script src="js/match.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
